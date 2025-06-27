@@ -1,103 +1,109 @@
-import Image from "next/image";
+'use client';
 
-export default function Home() {
+import { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useRouter } from 'next/navigation';
+
+export default function LabyrinthPage() {
+  const [isLoading, setIsLoading] = useState(true);
+  const router = useRouter();
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+      router.push('/demo'); // Directly navigate to demo after loading
+    }, 4000);
+    return () => clearTimeout(timer);
+  }, [router]);
+
+  const LabyrinthLogo = ({ size = 24 }: { size?: number }) => (
+    <motion.svg 
+      width={size} 
+      height={size} 
+      viewBox="0 0 100 100" 
+      className="mx-auto"
+      animate={{ rotate: 360 }}
+      transition={{ 
+        duration: 30,
+        repeat: Infinity,
+        ease: "linear"
+      }}
+    >
+      <circle cx="50" cy="50" r="45" fill="none" stroke="currentColor" strokeWidth="2" />
+      <path
+        d="M50 5a45 45 0 0 1 0 90M50 15a35 35 0 0 0 0 70M50 25a25 25 0 0 1 0 50M50 35a15 15 0 0 0 0 30"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.5"
+      />
+      <path
+        d="M50 50L50 5M65 20L50 50M80 35L50 50M80 65L50 50M65 80L50 50M35 80L50 50M20 65L50 50M20 35L50 50M35 20L50 50"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.2"
+      />
+      <circle cx="50" cy="50" r="3" fill="currentColor" />
+    </motion.svg>
+  );
+
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+    <div className="min-h-screen bg-gradient-to-b from-white to-gray-100 text-gray-900 overflow-hidden font-sans">
+      <AnimatePresence>
+        {isLoading && (
+          <motion.div
+            initial={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 2 }}
+            className="fixed inset-0 bg-white z-50 flex items-center justify-center flex-col"
+          >
+            <motion.div
+              initial={{ scale: 0.6, opacity: 0 }}
+              animate={{ 
+                scale: 1, 
+                opacity: 1,
+                transition: {
+                  duration: 2,
+                  ease: [0.22, 1, 0.36, 1]
+                }
+              }}
+            >
+              <LabyrinthLogo size={60} />
+            </motion.div>
+            <motion.h1
+              className="text-4xl mt-4 text-black tracking-widest"
+              initial={{ y: 30, opacity: 0 }}
+              animate={{ 
+                y: 0, 
+                opacity: 1,
+                transition: {
+                  delay: 1,
+                  duration: 2,
+                  ease: [0.22, 1, 0.36, 1]
+                }
+              }}
+            >
+              LABYRINTH
+            </motion.h1>
+            <motion.p className="mt-2 text-gray-600 text-sm tracking-wide uppercase">
+              The Path Begins
+            </motion.p>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+      {/* This fallback content will only show very briefly during redirect */}
+      {!isLoading && (
+        <main className="relative z-10 min-h-screen flex items-center justify-center">
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="text-center"
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+            <LabyrinthLogo size={80} />
+            <p className="mt-4 text-gray-600">Entering the Labyrinth...</p>
+          </motion.div>
+        </main>
+      )}
     </div>
   );
 }
