@@ -6,22 +6,28 @@ import { useRouter } from 'next/navigation';
 
 export default function LabyrinthPage() {
   const [isLoading, setIsLoading] = useState(true);
+  const [showOptions, setShowOptions] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsLoading(false);
-      router.push('/demo'); // Directly navigate to demo after loading
+      setShowOptions(true);
     }, 4000);
     return () => clearTimeout(timer);
-  }, [router]);
+  }, []);
 
-  const LabyrinthLogo = ({ size = 24 }: { size?: number }) => (
+  interface LabyrinthLogoProps {
+    size?: number;
+    className?: string;
+  }
+
+  const LabyrinthLogo = ({ size = 24, className = '' }: LabyrinthLogoProps) => (
     <motion.svg 
       width={size} 
       height={size} 
       viewBox="0 0 100 100" 
-      className="mx-auto"
+      className={`mx-auto ${className}`}
       animate={{ rotate: 360 }}
       transition={{ 
         duration: 30,
@@ -46,6 +52,13 @@ export default function LabyrinthPage() {
     </motion.svg>
   );
 
+  const handleOptionSelect = (path: string) => {
+    setShowOptions(false);
+    setTimeout(() => {
+      router.push(path);
+    }, 1000);
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-white to-gray-100 text-gray-900 overflow-hidden font-sans">
       <AnimatePresence>
@@ -54,7 +67,7 @@ export default function LabyrinthPage() {
             initial={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 2 }}
-            className="fixed inset-0 bg-white z-50 flex items-center justify-center flex-col"
+            className="fixed inset-0 bg-white z-50 flex items-center justify-center flex-col px-4"
           >
             <motion.div
               initial={{ scale: 0.6, opacity: 0 }}
@@ -67,11 +80,11 @@ export default function LabyrinthPage() {
                 }
               }}
             >
-              <LabyrinthLogo size={60} />
+              <LabyrinthLogo size={60} className="md:size-[120px]" />
             </motion.div>
             <motion.h1
-              className="text-4xl mt-4 text-black tracking-widest"
-              initial={{ y: 30, opacity: 0 }}
+              className="text-3xl md:text-5xl mt-4 text-black tracking-widest text-center"
+              initial={{ y: 20, opacity: 0 }}
               animate={{ 
                 y: 0, 
                 opacity: 1,
@@ -84,23 +97,67 @@ export default function LabyrinthPage() {
             >
               LABYRINTH
             </motion.h1>
-            <motion.p className="mt-2 text-gray-600 text-sm tracking-wide uppercase">
+            <motion.p className="mt-2 text-gray-600 text-xs md:text-base tracking-wide uppercase">
               The Path Begins
             </motion.p>
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* This fallback content will only show very briefly during redirect */}
-      {!isLoading && (
-        <main className="relative z-10 min-h-screen flex items-center justify-center">
+      {showOptions && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 1 }}
+          className="fixed inset-0 bg-white z-40 flex items-center justify-center flex-col px-4"
+        >
+          <div className="flex flex-col items-center justify-center w-full px-4">
+            <motion.div
+              initial={{ scale: 0.9 }}
+              animate={{ scale: 1 }}
+              transition={{ duration: 0.5 }}
+            >
+              <LabyrinthLogo size={80} className="md:size-[160px]" />
+            </motion.div>
+            <motion.h1 className="text-3xl md:text-5xl mt-6 text-black tracking-widest text-center">
+              LABYRINTH
+            </motion.h1>
+            <motion.p className="mt-3 text-gray-600 mb-8 text-center text-base md:text-lg">
+              Choose your path
+            </motion.p>
+            
+            <div className="flex flex-col md:flex-row gap-4 w-full max-w-xs md:max-w-md md:gap-6">
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => handleOptionSelect('/demo')}
+                className="px-6 py-3 md:px-8 md:py-4 bg-black text-white rounded-full font-medium hover:bg-gray-800 transition-colors text-base md:text-lg w-full"
+              >
+                Enter the Labyrinth
+              </motion.button>
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => handleOptionSelect('/Rules')}
+                className="px-6 py-3 md:px-8 md:py-4 bg-white text-black border border-black md:border-2 rounded-full font-medium hover:bg-gray-100 transition-colors text-base md:text-lg w-full"
+              >
+                Learn the Rules
+              </motion.button>
+            </div>
+          </div>
+        </motion.div>
+      )}
+
+      {!isLoading && !showOptions && (
+        <main className="relative z-10 min-h-screen flex items-center justify-center px-4">
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             className="text-center"
           >
-            <LabyrinthLogo size={80} />
-            <p className="mt-4 text-gray-600">Entering the Labyrinth...</p>
+            <LabyrinthLogo size={80} className="md:size-[160px]" />
+            <p className="mt-4 text-gray-600 text-base md:text-lg">Entering the Labyrinth...</p>
           </motion.div>
         </main>
       )}
