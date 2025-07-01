@@ -1,9 +1,10 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ref, push } from 'firebase/database';
 import { db } from '../lib/firebase';
+import Link from 'next/link';
 
 type FormData = {
   name: string;
@@ -150,7 +151,7 @@ export default function LabyrinthMysteryPage() {
       placeholder: question.placeholder,
       required: question.required,
       autoFocus: true,
-      className: 'w-full bg-black/40 border border-white/20 px-4 py-3 rounded-lg text-white focus:outline-none focus:ring-1 focus:ring-white/30 placeholder-white/50',
+      className: 'w-full bg-black/40 border border-white/20 px-4 py-3 rounded-lg text-white focus:outline-none focus:ring-1 focus:ring-white/30 placeholder-white/50 text-sm sm:text-base',
     };
 
     switch (question.type) {
@@ -173,7 +174,7 @@ export default function LabyrinthMysteryPage() {
               className="h-5 w-5 rounded border-white/20 bg-black/40 focus:ring-white"
               required={question.required}
             />
-            <label className="text-sm">{question.placeholder}</label>
+            <label className="text-sm sm:text-base">{question.placeholder}</label>
           </div>
         );
       default:
@@ -202,15 +203,23 @@ export default function LabyrinthMysteryPage() {
         />
       </div>
 
+      {/* Rules Button - Top Right */}
+      <Link 
+        href="/Rules" 
+        className="fixed top-4 right-4 z-50 px-4 py-2 bg-white/10 border border-white/20 rounded-lg hover:bg-white/20 transition-colors text-sm sm:text-base backdrop-blur-sm"
+      >
+        Rules
+      </Link>
+
       {/* Header */}
       <motion.div
-        className="mb-8 text-center z-10"
+        className="mb-8 text-center z-10 w-full px-4"
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8 }}
       >
         <motion.div
-          className="w-40 h-40 mx-auto"
+          className="w-32 h-32 sm:w-40 sm:h-40 mx-auto"
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.3, duration: 0.8 }}
@@ -223,7 +232,7 @@ export default function LabyrinthMysteryPage() {
         </motion.div>
 
         <motion.h1
-          className="mt-6 text-3xl font-bold tracking-wider uppercase"
+          className="mt-4 sm:mt-6 text-2xl sm:text-3xl font-bold tracking-wider uppercase"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.6, duration: 0.8 }}
@@ -235,7 +244,7 @@ export default function LabyrinthMysteryPage() {
       {/* Form Content */}
       {!submitted ? (
         <motion.div
-          className="w-full max-w-md bg-black/70 p-8 rounded-xl shadow-lg border border-white/10 backdrop-blur-sm z-10"
+          className="w-full max-w-md bg-black/70 p-6 sm:p-8 rounded-xl shadow-lg border border-white/10 backdrop-blur-sm z-10 mx-4"
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.9, duration: 0.6 }}
@@ -250,7 +259,7 @@ export default function LabyrinthMysteryPage() {
                 transition={{ duration: 0.3 }}
                 className="space-y-6"
               >
-                {/* Input Field - Now only this remains */}
+                {/* Input Field */}
                 <div>{renderInputField(questions[currentQuestionIndex])}</div>
 
                 {/* Navigation Buttons */}
@@ -259,7 +268,7 @@ export default function LabyrinthMysteryPage() {
                     type="button"
                     onClick={handlePrevious}
                     disabled={currentQuestionIndex === 0}
-                    className="px-4 py-2 border border-white/20 rounded-lg disabled:opacity-50 hover:bg-white/10 transition-colors flex-1"
+                    className="px-4 py-2 border border-white/20 rounded-lg disabled:opacity-50 hover:bg-white/10 transition-colors flex-1 text-sm sm:text-base"
                   >
                     Previous
                   </button>
@@ -269,7 +278,7 @@ export default function LabyrinthMysteryPage() {
                       type="button"
                       onClick={handleNext}
                       disabled={!validateCurrentField()}
-                      className="px-4 py-2 bg-white text-black rounded-lg disabled:opacity-50 hover:bg-white/90 transition-colors flex-1"
+                      className="px-4 py-2 bg-white text-black rounded-lg disabled:opacity-50 hover:bg-white/90 transition-colors flex-1 text-sm sm:text-base"
                     >
                       Next
                     </button>
@@ -277,7 +286,7 @@ export default function LabyrinthMysteryPage() {
                     <button
                       type="submit"
                       disabled={isSubmitting || !validateCurrentField()}
-                      className="px-4 py-2 bg-white text-black rounded-lg disabled:opacity-50 hover:bg-white/90 transition-colors flex-1"
+                      className="px-4 py-2 bg-white text-black rounded-lg disabled:opacity-50 hover:bg-white/90 transition-colors flex-1 text-sm sm:text-base"
                     >
                       {isSubmitting ? 'Submitting...' : 'Submit'}
                     </button>
@@ -289,15 +298,15 @@ export default function LabyrinthMysteryPage() {
         </motion.div>
       ) : (
         <motion.div
-          className="z-10 text-center bg-black/70 border border-white/10 rounded-xl p-8 shadow-md max-w-md backdrop-blur-sm"
+          className="z-10 text-center bg-black/70 border border-white/10 rounded-xl p-6 sm:p-8 shadow-md max-w-md backdrop-blur-sm mx-4"
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.6 }}
         >
-          <h2 className="text-2xl font-bold tracking-wider uppercase mb-3">
+          <h2 className="text-xl sm:text-2xl font-bold tracking-wider uppercase mb-3">
             Your Path is Recorded
           </h2>
-          <p className="text-white/80">
+          <p className="text-white/80 text-sm sm:text-base">
             The labyrinth whispers of your approach. Await our sign when the
             stars align.
           </p>
