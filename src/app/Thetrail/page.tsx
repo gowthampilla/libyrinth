@@ -1,107 +1,131 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ref, push } from 'firebase/database';
 import { db } from '../lib/firebase';
+
+type FormData = {
+  name: string;
+  email: string;
+  address: string;
+  phoneLast4: string;
+  reason: string;
+  acceptRules: boolean;
+};
+
+type Question = {
+  id: keyof FormData;
+  type: string;
+  placeholder: string;
+  required?: boolean;
+};
+
+const questions: Question[] = [
+  {
+    id: 'name',
+    type: 'text',
+    placeholder: 'State your name, warrior...',
+    required: true,
+  },
+  {
+    id: 'email',
+    type: 'email',
+    placeholder: 'Any mail..? Your contact sigil...',
+    required: true,
+  },
+  {
+    id: 'address',
+    type: 'text',
+    placeholder: 'Where does your presence reside? Write your current realm...',
+    required: true,
+  },
+  {
+    id: 'phoneLast4',
+    type: 'text',
+    placeholder: 'Reveal the last 4 digits of your rune stone (phone number)...',
+    required: true,
+  },
+  {
+    id: 'reason',
+    type: 'textarea',
+    placeholder: 'Why should the OSSPTS accept you? Prove your worth...',
+    required: true,
+  },
+  {
+    id: 'acceptRules',
+    type: 'checkbox',
+    placeholder: 'Do you accept the sacred rules of the Labyrinth?',
+    required: true,
+  },
+];
+
+const initialFormData: FormData = {
+  name: '',
+  email: '',
+  address: '',
+  phoneLast4: '',
+  reason: '',
+  acceptRules: false,
+};
 
 export default function LabyrinthMysteryPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-  const [typedText, setTypedText] = useState('');
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    code: '',
-    reason: ''
-  });
-  const [isTypingComplete, setIsTypingComplete] = useState(false);
+  const [formData, setFormData] = useState<FormData>(initialFormData);
 
-  const questions = [
-    {
-      id: 'name',
-      label: 'What do they call you, wanderer?',
-      type: 'text',
-      placeholder: 'Speak your name...'
-    },
-    {
-      id: 'email',
-      label: 'How might the oracles reach you?',
-      type: 'email',
-      placeholder: 'Your contact sigil...'
-    },
-    {
-      id: 'code',
-      label: 'What secret rune grants you passage?',
-      type: 'text',
-      placeholder: 'Whisper the glyph...'
-    },
-    {
-      id: 'reason',
-      label: 'Why should the labyrinth accept you?',
-      type: 'textarea',
-      placeholder: 'Prove your worth...'
-    }
-  ];
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const { name, type } = e.target;
+    const value =
+      type === 'checkbox'
+        ? (e.target as HTMLInputElement).checked
+        : e.target.value;
 
-  // Typing animation effect
-  useEffect(() => {
-    setIsTypingComplete(false);
-    const currentQuestion = questions[currentQuestionIndex].label;
-    let i = 0;
-    setTypedText('');
-
-    const typingInterval = setInterval(() => {
-      if (i < currentQuestion.length) {
-        setTypedText(prev => prev + currentQuestion.charAt(i));
-        i++;
-      } else {
-        clearInterval(typingInterval);
-        setIsTypingComplete(true);
-      }
-    }, 50);
-
-    return () => clearInterval(typingInterval);
-  }, [currentQuestionIndex]);
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && isTypingComplete) {
-      e.preventDefault();
-      if (currentQuestionIndex < questions.length - 1) {
-        handleNext();
-      } else if (currentQuestionIndex === questions.length - 1) {
-        handleSubmit(e);
-      }
+  const validateCurrentField = (): boolean => {
+    const currentQuestion = questions[currentQuestionIndex];
+    if (!currentQuestion.required) return true;
+
+    const value = formData[currentQuestion.id];
+    if (currentQuestion.type === 'checkbox') {
+      return value === true;
     }
+    return String(value).trim() !== '';
   };
 
   const handleNext = () => {
+    if (!validateCurrentField()) return;
     if (currentQuestionIndex < questions.length - 1) {
-      setCurrentQuestionIndex(prev => prev + 1);
+      setCurrentQuestionIndex((prev) => prev + 1);
     }
   };
 
   const handlePrevious = () => {
     if (currentQuestionIndex > 0) {
-      setCurrentQuestionIndex(prev => prev - 1);
+      setCurrentQuestionIndex((prev) => prev - 1);
     }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    const allAnswered = questions.every(q => formData[q.id as keyof typeof formData].trim() !== '');
+
+    const allAnswered = questions.every((q) => {
+      if (!q.required) return true;
+      const value = formData[q.id];
+      if (q.type === 'checkbox') return value === true;
+      return String(value).trim() !== '';
+    });
+
     if (!allAnswered) {
-      alert('Please answer all questions before submitting');
+      alert('Please complete all required fields to proceed.');
       return;
     }
 
@@ -112,84 +136,111 @@ export default function LabyrinthMysteryPage() {
       await push(submissionsRef, formData);
       setSubmitted(true);
     } catch (err) {
-      console.error('[Firebase Error]', err);
+      console.error('Submission error:', err);
+      alert('Failed to submit. Please try again.');
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  return (
-    <div className="min-h-screen text-white flex flex-col items-center justify-center px-4 py-16 relative overflow-hidden font-serif">
-      {/* Background Image */}
-      <div 
-        className="fixed inset-0 z-0"
-        style={{
-          backgroundImage: "url('https://res.cloudinary.com/dobqpjhd7/image/upload/v1751379989/Jul_1_2025_07_56_01_PM_efuomf.png')",
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          backgroundRepeat: 'no-repeat'
-        }}
-      />
+  const renderInputField = (question: Question) => {
+    const commonProps = {
+      name: question.id,
+      onChange: handleInputChange,
+      placeholder: question.placeholder,
+      required: question.required,
+      autoFocus: true,
+      className: 'w-full bg-black/40 border border-white/20 px-4 py-3 rounded-lg text-white focus:outline-none focus:ring-1 focus:ring-white/30 placeholder-white/50',
+    };
 
+    switch (question.type) {
+      case 'textarea':
+        return (
+          <textarea
+            {...commonProps}
+            value={formData[question.id] as string}
+            rows={4}
+          />
+        );
+      case 'checkbox':
+        return (
+          <div className="flex items-center space-x-3">
+            <input
+              type="checkbox"
+              name={question.id}
+              checked={formData[question.id] as boolean}
+              onChange={handleInputChange}
+              className="h-5 w-5 rounded border-white/20 bg-black/40 focus:ring-white"
+              required={question.required}
+            />
+            <label className="text-sm">{question.placeholder}</label>
+          </div>
+        );
+      default:
+        return (
+          <input
+            type={question.type}
+            {...commonProps}
+            value={formData[question.id] as string}
+          />
+        );
+    }
+  };
+
+  return (
+    <div className="min-h-screen text-white font-sans flex flex-col items-center justify-center px-4 py-16 relative overflow-hidden">
+      {/* Background */}
+      <div className="fixed inset-0 z-0 bg-black/80">
+        <div
+          className="absolute inset-0 opacity-50"
+          style={{
+            backgroundImage:
+              "url('https://res.cloudinary.com/dobqpjhd7/image/upload/v1751379989/Jul_1_2025_07_56_01_PM_efuomf.png')",
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+          }}
+        />
+      </div>
+
+      {/* Header */}
       <motion.div
-        className="mb-6 text-center z-10" // Reduced margin-bottom
+        className="mb-8 text-center z-10"
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 1 }}
+        transition={{ duration: 0.8 }}
       >
-        {/* Logo Container - Made smaller and more elegant */}
         <motion.div
-          className="w-40 h-40 mx-auto" // Reduced from w-64 h-64
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ 
-            opacity: 1, 
-            scale: 1,
-            transition: { 
-              duration: 0.8,
-              ease: "easeOut"
-            }
-          }}
+          className="w-40 h-40 mx-auto"
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.3, duration: 0.8 }}
         >
           <img
             src="https://res.cloudinary.com/dobqpjhd7/image/upload/v1751380380/Untitled_design__32_-removebg-preview_1_en8m9t.png"
             alt="Labyrinth Logo"
-            className="w-full h-full object-contain drop-shadow-lg" // Added subtle shadow
+            className="w-full h-full object-contain drop-shadow-lg"
           />
         </motion.div>
-        
-        {/* Title with improved spacing and animation */}
+
         <motion.h1
-          className="mt-6 text-2xl md:text-3xl font-bold tracking-wider uppercase" // Slightly smaller text
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ 
-            opacity: 1, 
-            y: 0,
-            transition: {
-              delay: 0.3,
-              duration: 0.8,
-              ease: "easeOut"
-            }
-          }}
+          className="mt-6 text-3xl font-bold tracking-wider uppercase"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.6, duration: 0.8 }}
         >
           The Labyrinth Awaits
         </motion.h1>
       </motion.div>
 
+      {/* Form Content */}
       {!submitted ? (
         <motion.div
-          className="w-full max-w-md bg-black bg-opacity-70 p-8 rounded-xl shadow-lg border border-white/10 backdrop-blur-sm z-10 space-y-6" // Slightly more compact
+          className="w-full max-w-md bg-black/70 p-8 rounded-xl shadow-lg border border-white/10 backdrop-blur-sm z-10"
           initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ 
-            opacity: 1, 
-            scale: 1,
-            transition: { 
-              delay: 0.8, 
-              duration: 0.6,
-              ease: "easeOut"
-            }
-          }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.9, duration: 0.6 }}
         >
-          <form onSubmit={handleSubmit} onKeyDown={handleKeyDown}>
+          <form onSubmit={handleSubmit}>
             <AnimatePresence mode="wait">
               <motion.div
                 key={currentQuestionIndex}
@@ -197,60 +248,18 @@ export default function LabyrinthMysteryPage() {
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: 20 }}
                 transition={{ duration: 0.3 }}
-                className="flex flex-col space-y-5" // Tighter spacing
+                className="space-y-6"
               >
-                <div>
-                  <label 
-                    htmlFor={questions[currentQuestionIndex].id} 
-                    className="text-base font-medium mb-2 h-10 flex items-center" // Smaller text and height
-                  >
-                    {typedText}
-                    {!isTypingComplete ? (
-                      <motion.span
-                        animate={{ opacity: [0, 1, 0] }}
-                        transition={{ repeat: Infinity, duration: 0.8 }}
-                        className="ml-1"
-                      >
-                        |
-                      </motion.span>
-                    ) : null}
-                  </label>
-                  
-                  {questions[currentQuestionIndex].type === 'textarea' ? (
-                    <textarea
-                      id={questions[currentQuestionIndex].id}
-                      name={questions[currentQuestionIndex].id}
-                      rows={3} // Smaller textarea
-                      required
-                      value={formData[questions[currentQuestionIndex].id as keyof typeof formData]}
-                      onChange={handleInputChange}
-                      placeholder={questions[currentQuestionIndex].placeholder}
-                      className="w-full bg-black/40 border border-white/20 px-3 py-2 rounded-md text-white focus:outline-none focus:ring-1 focus:ring-white/30 placeholder-white/50 text-sm" // Refined styling
-                      disabled={!isTypingComplete}
-                      autoFocus
-                    />
-                  ) : (
-                    <input
-                      type={questions[currentQuestionIndex].type}
-                      id={questions[currentQuestionIndex].id}
-                      name={questions[currentQuestionIndex].id}
-                      required
-                      value={formData[questions[currentQuestionIndex].id as keyof typeof formData]}
-                      onChange={handleInputChange}
-                      placeholder={questions[currentQuestionIndex].placeholder}
-                      className="w-full bg-black/40 border border-white/20 px-3 py-2 rounded-md text-white focus:outline-none focus:ring-1 focus:ring-white/30 placeholder-white/50 text-sm" // Consistent styling
-                      disabled={!isTypingComplete}
-                      autoFocus
-                    />
-                  )}
-                </div>
+                {/* Input Field - Now only this remains */}
+                <div>{renderInputField(questions[currentQuestionIndex])}</div>
 
-                <div className="flex justify-between gap-3">
+                {/* Navigation Buttons */}
+                <div className="flex justify-between gap-4">
                   <button
                     type="button"
                     onClick={handlePrevious}
-                    disabled={currentQuestionIndex === 0 || !isTypingComplete}
-                    className="px-3 py-1.5 border border-white/20 rounded-md disabled:opacity-50 transition-all hover:bg-white/10 text-sm flex-1" // More compact buttons
+                    disabled={currentQuestionIndex === 0}
+                    className="px-4 py-2 border border-white/20 rounded-lg disabled:opacity-50 hover:bg-white/10 transition-colors flex-1"
                   >
                     Previous
                   </button>
@@ -259,16 +268,16 @@ export default function LabyrinthMysteryPage() {
                     <button
                       type="button"
                       onClick={handleNext}
-                      disabled={!isTypingComplete || !formData[questions[currentQuestionIndex].id as keyof typeof formData]}
-                      className="px-3 py-1.5 bg-white text-black rounded-md disabled:opacity-60 transition-all hover:bg-white/90 text-sm flex-1" // More compact buttons
+                      disabled={!validateCurrentField()}
+                      className="px-4 py-2 bg-white text-black rounded-lg disabled:opacity-50 hover:bg-white/90 transition-colors flex-1"
                     >
                       Next
                     </button>
                   ) : (
                     <button
                       type="submit"
-                      disabled={isSubmitting || !isTypingComplete}
-                      className="px-3 py-1.5 bg-white text-black rounded-md disabled:opacity-60 transition-all hover:bg-white/90 text-sm flex-1" // More compact buttons
+                      disabled={isSubmitting || !validateCurrentField()}
+                      className="px-4 py-2 bg-white text-black rounded-lg disabled:opacity-50 hover:bg-white/90 transition-colors flex-1"
                     >
                       {isSubmitting ? 'Submitting...' : 'Submit'}
                     </button>
@@ -280,16 +289,17 @@ export default function LabyrinthMysteryPage() {
         </motion.div>
       ) : (
         <motion.div
-          className="z-10 text-center bg-black/70 border border-white/10 rounded-xl p-8 shadow-md max-w-md backdrop-blur-sm" // More compact
+          className="z-10 text-center bg-black/70 border border-white/10 rounded-xl p-8 shadow-md max-w-md backdrop-blur-sm"
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.6 }}
         >
-          <h2 className="text-xl font-bold tracking-wider uppercase mb-2"> {/* Smaller heading */}
+          <h2 className="text-2xl font-bold tracking-wider uppercase mb-3">
             Your Path is Recorded
           </h2>
-          <p className="text-white/80 text-xs"> {/* Smaller text */}
-            The labyrinth whispers of your approach. Await our sign when the stars align.
+          <p className="text-white/80">
+            The labyrinth whispers of your approach. Await our sign when the
+            stars align.
           </p>
         </motion.div>
       )}
