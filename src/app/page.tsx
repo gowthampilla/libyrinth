@@ -11,8 +11,8 @@ export default function LabyrinthPage() {
   useEffect(() => {
     const timer = setTimeout(() => {
       setShowLogo(false);
-      router.push('/demo');
-    }, 4000); // Show logo for 4 seconds then navigate
+      router.push('/Thetrail');
+    }, 3000); // Show logo for 4 seconds then navigate
 
     return () => clearTimeout(timer);
   }, [router]);
