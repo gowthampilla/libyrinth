@@ -1,89 +1,140 @@
 'use client';
 
-import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
+import { FiArrowLeft } from 'react-icons/fi';
 
-type Rule = {
-  title: string;
-  text: string;
-  glyph: string;
-};
-
-const rules: Rule[] = [
-  { title: "Aegis of Zeus", text: "The will of the king shields those in his domain. Power flows from order.", glyph: "⚡" },
-  { title: "Sands of Chronos", text: "Every move shifts time forward. Patience is the key to mastery.", glyph: "⏳" },
-  { title: "Mantle of Hestia", text: "Corners hold the hearth. Guard your home, and it will guard you.", glyph: "🏛" },
-  { title: "Trident of Poseidon", text: "Diagonals flow like tides. Ride them swiftly or be swept away.", glyph: "🌊" },
-  { title: "Wings of Hermes", text: "Leap with cunning and grace. The unexpected strike wins the war.", glyph: "🪽" },
-  { title: "Flame of Hephaestus", text: "Start low, build strong. Fire becomes forge in enemy lands.", glyph: "🔥" },
-  { title: "Oracle of Delphi", text: "Some truths reveal only when threatened. Listen when the gods warn you.", glyph: "🌀" },
-  { title: "Judgment of Themis", text: "Finality is divine. When the throne falls, the game ends in fate's hands.", glyph: "⚖️" }
-];
-
-export default function MythicRulesBoard() {
+export default function AboutGame() {
   const router = useRouter();
-  const [activeIdx, setActiveIdx] = useState<number | null>(null);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-black to-neutral-900 text-white p-6 flex flex-col items-center font-serif">
-      <header className="text-center mb-12">
-        <h1 className="text-4xl sm:text-5xl font-extrabold tracking-widest text-white uppercase">
-          Codex of the Olympians
-        </h1>
-        <p className="text-neutral-400 italic text-base mt-2 max-w-xl mx-auto">
-          A divine ledger of sacred tactics — where each square is etched with immortal wisdom.
-        </p>
-      </header>
+    <div className="min-h-screen text-white font-mono overflow-hidden relative">
+      {/* Background Image */}
+      <div 
+        className="fixed inset-0 z-0"
+        style={{
+          backgroundImage: "url('https://res.cloudinary.com/dobqpjhd7/image/upload/v1751381281/ChatGPT_Image_Jul_1_2025_08_17_28_PM_booy7g.png')",
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat'
+        }}
+      />
+      
+      {/* Dark overlay for better readability */}
+      <div className="fixed inset-0 z-0 bg-black/60" />
 
-      <div className="grid grid-cols-4 sm:grid-cols-8 gap-4 max-w-6xl mx-auto w-full px-4">
-        {Array.from({ length: 64 }).map((_, idx) => {
-          const rule = rules[idx % rules.length];
-          const isDark = (Math.floor(idx / 8) + idx) % 2 === 0;
-          const isActive = activeIdx === idx;
+      <div className="container mx-auto px-4 py-8 md:py-12 max-w-3xl lg:max-w-4xl relative z-10">
+        {/* Back button */}
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mb-6 md:mb-8"
+        >
+          <button
+            onClick={() => router.back()}
+            className="flex items-center text-white/80 hover:text-white transition-colors text-sm md:text-base"
+          >
+            <FiArrowLeft className="mr-1 md:mr-2" size={16} />
+            Back
+          </button>
+        </motion.div>
 
-          return (
-            <motion.div
-              key={idx}
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: idx * 0.025, duration: 0.5 }}
-              onClick={() => setActiveIdx(isActive ? null : idx)}
-              className={`
-                relative h-36 sm:h-40 rounded-xl border overflow-hidden transition duration-300 transform cursor-pointer 
-                ${isActive ? 'bg-white text-black border-white scale-105 shadow-[0_0_40px_rgba(255,255,255,0.2)] z-10' : 
-                isDark ? 'bg-neutral-800 border-neutral-700' : 'bg-neutral-900 border-neutral-600'}
-              `}
-            >
-              <div className="flex flex-col justify-center items-center h-full px-2 text-center">
-                <div className="text-3xl sm:text-4xl font-bold mb-1">{rule.glyph}</div>
-                <div className="text-[13px] sm:text-[15px] font-semibold uppercase tracking-wider leading-tight">
-                  {rule.title}
-                </div>
+        {/* Content */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.6 }}
+          className="flex flex-col items-center"
+        >
+          {/* New Logo Image */}
+          <motion.div
+            className="w-40 h-40 mb-6 md:mb-8" // Adjusted size for better proportion
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ 
+              opacity: 1, 
+              scale: 1,
+              rotate: 360,  // Keeping the rotation animation
+              transition: {
+                duration: 40,
+                repeat: Infinity,
+                ease: "linear"
+              }
+            }}
+          >
+            <img
+              src="https://res.cloudinary.com/dobqpjhd7/image/upload/v1751380380/Untitled_design__32_-removebg-preview_1_en8m9t.png"
+              alt="Labyrinth Logo"
+              className="w-full h-full object-contain drop-shadow-lg"
+            />
+          </motion.div>
+
+          <h1 className="text-2xl md:text-3xl font-light tracking-wider text-center mb-6 md:mb-8 text-white">
+            ABOUT LABYRINTH
+          </h1>
+
+          <div className="w-full text-white/80 space-y-4 md:space-y-5 text-sm md:text-base leading-relaxed">
+            <p className="text-center md:text-left md:px-4">
+              Navigate evolving mazes that challenge your perception and problem-solving skills in this minimalist puzzle experience.
+            </p>
+
+            {/* Features Section - No Box */}
+            <div className="mt-6">
+              <h2 className="font-medium mb-3 md:mb-4 text-center md:text-left text-lg md:text-xl text-white">
+                GAME FEATURES
+              </h2>
+              <ul className="space-y-2 md:space-y-3">
+                <li className="flex items-start">
+                  <span className="inline-block w-1.5 h-1.5 bg-white rounded-full mt-1.5 md:mt-2 mr-2 md:mr-3"></span>
+                  <span>Procedurally generated mazes with increasing complexity</span>
+                </li>
+                <li className="flex items-start">
+                  <span className="inline-block w-1.5 h-1.5 bg-white rounded-full mt-1.5 md:mt-2 mr-2 md:mr-3"></span>
+                  <span>Hidden pathways and secret levels to discover</span>
+                </li>
+                <li className="flex items-start">
+                  <span className="inline-block w-1.5 h-1.5 bg-white rounded-full mt-1.5 md:mt-2 mr-2 md:mr-3"></span>
+                  <span>Time-based challenges with global leaderboards</span>
+                </li>
+              </ul>
+            </div>
+
+            {/* How to Play Section - No Box */}
+            <div className="mt-4 md:mt-5">
+              <h2 className="font-medium mb-3 md:mb-4 text-center md:text-left text-lg md:text-xl text-white">
+                HOW TO PLAY
+              </h2>
+              <div className="space-y-2 md:space-y-3">
+                <p className="flex items-start">
+                  <span className="inline-block mr-2 text-white">•</span>
+                  <span>Use arrow keys or touch controls to navigate</span>
+                </p>
+                <p className="flex items-start">
+                  <span className="inline-block mr-2 text-white">•</span>
+                  <span>Collect keys to unlock gates and reach the exit</span>
+                </p>
+                <p className="flex items-start">
+                  <span className="inline-block mr-2 text-white">•</span>
+                  <span>Watch for environmental clues that hint at solutions</span>
+                </p>
               </div>
-              {isActive && (
-                <motion.div
-                  initial={{ opacity: 0, y: 5 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.3 }}
-                  className="absolute bottom-2 left-2 right-2 bg-white text-black text-xs rounded p-2 shadow-lg font-mono"
-                >
-                  {rule.text}
-                </motion.div>
-              )}
-            </motion.div>
-          );
-        })}
-      </div>
+            </div>
 
-      <motion.button
-        whileHover={{ scale: 1.08 }}
-        whileTap={{ scale: 0.95 }}
-        onClick={() => router.push('/demo')}
-        className="mt-16 bg-white text-black px-8 py-3 rounded-full font-bold shadow-lg hover:bg-gray-100 transition-all text-lg tracking-wider border border-black"
-      >
-        Begin the Quest →
-      </motion.button>
+            {/* CTA Button */}
+            <motion.div
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              className="mt-8 md:mt-10 w-full md:w-auto"
+            >
+              <button
+                onClick={() => router.push('/demo')}
+                className="w-full md:w-48 py-3 bg-white text-black hover:bg-gray-200 transition-colors text-sm md:text-base rounded-lg shadow-sm font-medium"
+              >
+                BEGIN JOURNEY
+              </button>
+            </motion.div>
+          </div>
+        </motion.div>
+      </div>
     </div>
   );
 }
