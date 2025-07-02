@@ -5,39 +5,41 @@ import { motion } from 'framer-motion';
 
 export default function RulesPage() {
   const rules = [
-    "1. The Labyrinth is sacred ground. Enter with respect or not at all.",
-    "2. Never reveal the full secrets of the OSSPTS to outsiders.",
-    "3. Your journey is yours alone. Comparisons breed weakness.",
-    "4. The path changes for each seeker. What worked before may not work again.",
-    "5. When the stars align, the gates will open. Impatience is the first trap.",
-    "6. Truth hides in patterns. Observe the cycles of moon and memory.",
-    "7. Four digits bind you to this realm. Guard them but do not worship them.",
-    "8. The keepers watch in silence. Prove your worth through action, not words.",
-    "9. To leave is to abandon all progress. Return only when called.",
-    "10. The final rule cannot be written, only discovered at journey's end."
+    "The Labyrinth is sacred ground. Enter with respect or not at all.",
+    "Never reveal the full secrets of the OSSPTS to outsiders.",
+    "Your journey is yours alone. Comparisons breed weakness.",
+    "The path changes for each seeker. What worked before may not work again.",
+    "When the stars align, the gates will open. Impatience is the first trap.",
+    "Truth hides in patterns. Observe the cycles of moon and memory.",
+    "Four digits bind you to this realm. Guard them but do not worship them.",
+    "The keepers watch in silence. Prove your worth through action, not words.",
+    "To leave is to abandon all progress. Return only when called.",
+    "The final rule cannot be written, only discovered at journey's end."
   ];
 
   return (
-    <div className="min-h-screen text-white font-sans flex flex-col items-center px-4 py-16 relative overflow-hidden">
-      {/* Background */}
-      <div className="fixed inset-0 z-0 bg-black/80">
-        <div
-          className="absolute inset-0 opacity-50"
+    <div className="min-h-screen text-amber-50 font-serif flex flex-col items-center px-4 py-16 relative overflow-hidden">
+      {/* Background with better blending */}
+      <div className="fixed inset-0 z-0">
+        <div 
+          className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/60 to-black/80"
           style={{
-            backgroundImage:
-              "url('https://res.cloudinary.com/dobqpjhd7/image/upload/v1751379989/Jul_1_2025_07_56_01_PM_efuomf.png')",
+            backgroundImage: "url('https://i.pinimg.com/736x/f3/2c/84/f32c84cda7433bb1337668ec1645fe30.jpg')",
             backgroundSize: 'cover',
             backgroundPosition: 'center',
+            backgroundAttachment: 'fixed',
+            mixBlendMode: 'multiply'
           }}
         />
+        <div className="absolute inset-0 bg-black/30" />
       </div>
 
-      {/* Back Button - Top Left */}
+      {/* Back Button */}
       <Link 
         href="/" 
-        className="fixed top-4 left-4 z-50 px-4 py-2 bg-white/10 border border-white/20 rounded-lg hover:bg-white/20 transition-colors text-sm sm:text-base backdrop-blur-sm"
+        className="fixed top-4 left-4 z-50 px-4 py-2 border border-amber-400/30 rounded-lg hover:bg-amber-400/10 transition-colors text-sm font-medium tracking-wider"
       >
-        Back
+        ← Back to Labyrinth
       </Link>
 
       {/* Header */}
@@ -56,15 +58,20 @@ export default function RulesPage() {
           <img
             src="https://res.cloudinary.com/dobqpjhd7/image/upload/v1751380380/Untitled_design__32_-removebg-preview_1_en8m9t.png"
             alt="Labyrinth Logo"
-            className="w-full h-full object-contain drop-shadow-lg"
+            className="w-full h-full object-contain drop-shadow-[0_0_8px_rgba(251,191,36,0.5)]"
           />
         </motion.div>
 
         <motion.h1
-          className="mt-4 sm:mt-6 text-2xl sm:text-3xl font-bold tracking-wider uppercase"
+          className="mt-6 text-3xl sm:text-5xl font-medium tracking-wider"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.6, duration: 0.8 }}
+          style={{
+            fontFamily: "'EB Garamond', serif",
+            textShadow: '0 0 10px rgba(251, 191, 36, 0.5)',
+            letterSpacing: '0.1em'
+          }}
         >
           The Sacred Rules
         </motion.h1>
@@ -72,33 +79,44 @@ export default function RulesPage() {
 
       {/* Rules Content */}
       <motion.div
-        className="w-full max-w-md bg-black/70 p-6 sm:p-8 rounded-xl shadow-lg border border-white/10 backdrop-blur-sm z-10 mx-4"
+        className="w-full max-w-2xl z-10 mx-4 space-y-8"
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ delay: 0.3, duration: 0.6 }}
       >
-        <div className="space-y-4">
-          {rules.map((rule, index) => (
-            <motion.div
-              key={index}
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.1 * index, duration: 0.3 }}
-              className="flex items-start"
+        {rules.map((rule, index) => (
+          <motion.div
+            key={index}
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.1 * index, duration: 0.3 }}
+            className="flex items-start group"
+          >
+            <div className="flex-shrink-0 text-2xl mr-4 mt-1 text-amber-400/80 font-medium transition-all group-hover:text-amber-300">
+              {index + 1}.
+            </div>
+            <p 
+              className="text-xl sm:text-2xl text-amber-50/90 leading-relaxed tracking-wide transition-all group-hover:text-amber-100"
+              style={{
+                fontFamily: "'Cormorant Garamond', serif",
+                textShadow: '0 0 5px rgba(0,0,0,0.3)'
+              }}
             >
-              <div className="flex-shrink-0 h-5 w-5 rounded-full bg-white/20 mr-3 mt-1"></div>
-              <p className="text-sm sm:text-base text-white/90">{rule}</p>
-            </motion.div>
-          ))}
-        </div>
+              {rule}
+            </p>
+          </motion.div>
+        ))}
 
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 1.2, duration: 0.6 }}
-          className="mt-8 pt-4 border-t border-white/10 text-center"
+          className="mt-16 pt-8 border-t border-amber-400/20 text-center"
         >
-          <p className="text-xs sm:text-sm text-white/60">
+          <p 
+            className="text-base sm:text-lg text-amber-400/70 italic tracking-wider"
+            style={{ fontFamily: "'Cormorant Garamond', serif" }}
+          >
             Violation of these rules may result in banishment from the Labyrinth
           </p>
         </motion.div>

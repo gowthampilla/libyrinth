@@ -23,42 +23,12 @@ type Question = {
 };
 
 const questions: Question[] = [
-  {
-    id: 'name',
-    type: 'text',
-    placeholder: 'State your name, warrior...',
-    required: true,
-  },
-  {
-    id: 'email',
-    type: 'email',
-    placeholder: 'Any mail..? Your contact sigil...',
-    required: true,
-  },
-  {
-    id: 'address',
-    type: 'text',
-    placeholder: 'Where does your presence reside? Write your current realm...',
-    required: true,
-  },
-  {
-    id: 'phoneLast4',
-    type: 'text',
-    placeholder: 'Reveal the last 4 digits of your rune stone (phone number)...',
-    required: true,
-  },
-  {
-    id: 'reason',
-    type: 'textarea',
-    placeholder: 'Why should the OSSPTS accept you? Prove your worth...',
-    required: true,
-  },
-  {
-    id: 'acceptRules',
-    type: 'checkbox',
-    placeholder: 'Do you accept the sacred rules of the Labyrinth?',
-    required: true,
-  },
+  { id: 'name', type: 'text', placeholder: 'State your name, warrior...', required: true },
+  { id: 'email', type: 'email', placeholder: 'Any mail..? Your contact sigil...', required: true },
+  { id: 'address', type: 'text', placeholder: 'Where does your presence reside? Write your current realm...', required: true },
+  { id: 'phoneLast4', type: 'text', placeholder: 'Reveal the last 4 digits of your rune stone (phone number)...', required: true },
+  { id: 'reason', type: 'textarea', placeholder: 'Why should the OSSPTS accept you? Prove your worth...', required: true },
+  { id: 'acceptRules', type: 'checkbox', placeholder: 'Do you accept the sacred rules of the Labyrinth?', required: true },
 ];
 
 const initialFormData: FormData = {
@@ -76,14 +46,9 @@ export default function LabyrinthMysteryPage() {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [formData, setFormData] = useState<FormData>(initialFormData);
 
-  const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, type } = e.target;
-    const value =
-      type === 'checkbox'
-        ? (e.target as HTMLInputElement).checked
-        : e.target.value;
+    const value = type === 'checkbox' ? (e.target as HTMLInputElement).checked : e.target.value;
 
     setFormData((prev) => ({
       ...prev,
@@ -96,10 +61,7 @@ export default function LabyrinthMysteryPage() {
     if (!currentQuestion.required) return true;
 
     const value = formData[currentQuestion.id];
-    if (currentQuestion.type === 'checkbox') {
-      return value === true;
-    }
-    return String(value).trim() !== '';
+    return currentQuestion.type === 'checkbox' ? value === true : String(value).trim() !== '';
   };
 
   const handleNext = () => {
@@ -119,10 +81,8 @@ export default function LabyrinthMysteryPage() {
     e.preventDefault();
 
     const allAnswered = questions.every((q) => {
-      if (!q.required) return true;
       const value = formData[q.id];
-      if (q.type === 'checkbox') return value === true;
-      return String(value).trim() !== '';
+      return q.required ? (q.type === 'checkbox' ? value === true : String(value).trim() !== '') : true;
     });
 
     if (!allAnswered) {
@@ -131,7 +91,6 @@ export default function LabyrinthMysteryPage() {
     }
 
     setIsSubmitting(true);
-
     try {
       const submissionsRef = ref(db, 'labyrinth_invites');
       await push(submissionsRef, formData);
@@ -151,7 +110,7 @@ export default function LabyrinthMysteryPage() {
       placeholder: question.placeholder,
       required: question.required,
       autoFocus: true,
-      className: 'w-full bg-black/40 border border-white/20 px-4 py-3 rounded-lg text-white focus:outline-none focus:ring-1 focus:ring-white/30 placeholder-white/50 text-sm sm:text-base',
+      className: 'w-full px-4 py-3 rounded-lg text-amber-50 focus:outline-none focus:ring-1 focus:ring-amber-400/30 placeholder-amber-200/50 text-lg tracking-wide',
     };
 
     switch (question.type) {
@@ -161,6 +120,7 @@ export default function LabyrinthMysteryPage() {
             {...commonProps}
             value={formData[question.id] as string}
             rows={4}
+            className={`${commonProps.className} bg-transparent border border-amber-400/30 backdrop-blur-sm`}
           />
         );
       case 'checkbox':
@@ -171,10 +131,10 @@ export default function LabyrinthMysteryPage() {
               name={question.id}
               checked={formData[question.id] as boolean}
               onChange={handleInputChange}
-              className="h-5 w-5 rounded border-white/20 bg-black/40 focus:ring-white"
+              className="h-5 w-5 rounded border-amber-400/50 bg-transparent focus:ring-amber-400"
               required={question.required}
             />
-            <label className="text-sm sm:text-base">{question.placeholder}</label>
+            <label className="text-lg text-amber-50/90 tracking-wide">{question.placeholder}</label>
           </div>
         );
       default:
@@ -183,30 +143,30 @@ export default function LabyrinthMysteryPage() {
             type={question.type}
             {...commonProps}
             value={formData[question.id] as string}
+            className={`${commonProps.className} bg-transparent border-b border-amber-400/30`}
           />
         );
     }
   };
 
   return (
-    <div className="min-h-screen text-white font-sans flex flex-col items-center justify-center px-4 py-16 relative overflow-hidden">
-      {/* Background */}
-      <div className="fixed inset-0 z-0 bg-black/80">
+    <div className="min-h-screen text-amber-50 flex flex-col items-center justify-center px-4 py-16 relative overflow-hidden">
+      {/* Enhanced Background */}
+      <div className="fixed inset-0 z-0">
         <div
-          className="absolute inset-0 opacity-50"
-          style={{
-            backgroundImage:
-              "url('https://res.cloudinary.com/dobqpjhd7/image/upload/v1751379989/Jul_1_2025_07_56_01_PM_efuomf.png')",
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
+          className="absolute inset-0 bg-cover bg-center"
+          style={{ 
+            backgroundImage: "url('https://i.pinimg.com/736x/9d/b7/3d/9db73dec4edf4c5d26150216f4bea61c.jpg')",
+            filter: 'brightness(0.7) contrast(1.2)'
           }}
         />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/50 to-black/70" />
       </div>
 
-      {/* Rules Button - Top Right */}
+      {/* Rules Button */}
       <Link 
         href="/Rules" 
-        className="fixed top-4 right-4 z-50 px-4 py-2 bg-white/10 border border-white/20 rounded-lg hover:bg-white/20 transition-colors text-sm sm:text-base backdrop-blur-sm"
+        className="fixed top-4 right-4 z-50 px-4 py-2 border border-amber-400/30 rounded-lg hover:bg-amber-400/10 transition-colors text-sm tracking-wider"
       >
         Rules
       </Link>
@@ -218,24 +178,16 @@ export default function LabyrinthMysteryPage() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8 }}
       >
-        <motion.div
-          className="w-32 h-32 sm:w-40 sm:h-40 mx-auto"
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.3, duration: 0.8 }}
-        >
-          <img
-            src="https://res.cloudinary.com/dobqpjhd7/image/upload/v1751380380/Untitled_design__32_-removebg-preview_1_en8m9t.png"
-            alt="Labyrinth Logo"
-            className="w-full h-full object-contain drop-shadow-lg"
-          />
-        </motion.div>
-
         <motion.h1
-          className="mt-4 sm:mt-6 text-2xl sm:text-3xl font-bold tracking-wider uppercase"
+          className="mt-4 sm:mt-6 text-3xl sm:text-4xl font-medium tracking-wider"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.6, duration: 0.8 }}
+          style={{
+            fontFamily: "'EB Garamond', serif",
+            textShadow: '0 0 10px rgba(251, 191, 36, 0.5)',
+            letterSpacing: '0.1em'
+          }}
         >
           The Labyrinth Awaits
         </motion.h1>
@@ -244,7 +196,7 @@ export default function LabyrinthMysteryPage() {
       {/* Form Content */}
       {!submitted ? (
         <motion.div
-          className="w-full max-w-md bg-black/70 p-6 sm:p-8 rounded-xl shadow-lg border border-white/10 backdrop-blur-sm z-10 mx-4"
+          className="w-full max-w-md z-10 mx-4"
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.9, duration: 0.6 }}
@@ -257,18 +209,18 @@ export default function LabyrinthMysteryPage() {
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: 20 }}
                 transition={{ duration: 0.3 }}
-                className="space-y-6"
+                className="space-y-8 flex flex-col items-center"
               >
-                {/* Input Field */}
-                <div>{renderInputField(questions[currentQuestionIndex])}</div>
+                {/* Input Field - Centered */}
+                <div className="w-full max-w-xs">{renderInputField(questions[currentQuestionIndex])}</div>
 
                 {/* Navigation Buttons */}
-                <div className="flex justify-between gap-4">
+                <div className="flex justify-between gap-4 w-full max-w-xs">
                   <button
                     type="button"
                     onClick={handlePrevious}
                     disabled={currentQuestionIndex === 0}
-                    className="px-4 py-2 border border-white/20 rounded-lg disabled:opacity-50 hover:bg-white/10 transition-colors flex-1 text-sm sm:text-base"
+                    className="px-4 py-2 border border-amber-400/30 rounded-lg disabled:opacity-50 hover:bg-amber-400/10 transition-colors flex-1 text-sm tracking-wider"
                   >
                     Previous
                   </button>
@@ -278,7 +230,7 @@ export default function LabyrinthMysteryPage() {
                       type="button"
                       onClick={handleNext}
                       disabled={!validateCurrentField()}
-                      className="px-4 py-2 bg-white text-black rounded-lg disabled:opacity-50 hover:bg-white/90 transition-colors flex-1 text-sm sm:text-base"
+                      className="px-4 py-2 bg-amber-400 text-black rounded-lg disabled:opacity-50 hover:bg-amber-300 transition-colors flex-1 text-sm tracking-wider"
                     >
                       Next
                     </button>
@@ -286,7 +238,7 @@ export default function LabyrinthMysteryPage() {
                     <button
                       type="submit"
                       disabled={isSubmitting || !validateCurrentField()}
-                      className="px-4 py-2 bg-white text-black rounded-lg disabled:opacity-50 hover:bg-white/90 transition-colors flex-1 text-sm sm:text-base"
+                      className="px-4 py-2 bg-amber-400 text-black rounded-lg disabled:opacity-50 hover:bg-amber-300 transition-colors flex-1 text-sm tracking-wider"
                     >
                       {isSubmitting ? 'Submitting...' : 'Submit'}
                     </button>
@@ -298,15 +250,18 @@ export default function LabyrinthMysteryPage() {
         </motion.div>
       ) : (
         <motion.div
-          className="z-10 text-center bg-black/70 border border-white/10 rounded-xl p-6 sm:p-8 shadow-md max-w-md backdrop-blur-sm mx-4"
+          className="z-10 text-center max-w-md mx-4"
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.6 }}
         >
-          <h2 className="text-xl sm:text-2xl font-bold tracking-wider uppercase mb-3">
+          <h2 
+            className="text-xl sm:text-2xl font-medium tracking-wider uppercase mb-3"
+            style={{ fontFamily: "'EB Garamond', serif" }}
+          >
             Your Path is Recorded
           </h2>
-          <p className="text-white/80 text-sm sm:text-base">
+          <p className="text-amber-50/80 text-lg tracking-wide">
             The labyrinth whispers of your approach. Await our sign when the
             stars align.
           </p>

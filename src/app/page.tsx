@@ -23,7 +23,7 @@ export default function LabyrinthPage() {
       <div 
         className="fixed inset-0"
         style={{
-          backgroundImage: "url('https://res.cloudinary.com/dobqpjhd7/image/upload/v1751378881/ChatGPT_Image_Jul_1_2025_07_37_52_PM_qi51wr.png')",
+          backgroundImage: "url('https://i.pinimg.com/736x/a0/f6/b3/a0f6b3b0af27202a9f67df848e02a672.jpg')",
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           backgroundRepeat: 'no-repeat',
@@ -31,7 +31,7 @@ export default function LabyrinthPage() {
         }}
       />
 
-      <AnimatePresence>
+      <AnimatePresence>h
         {showLogo && (
           <motion.div
             initial={{ opacity: 0 }}
