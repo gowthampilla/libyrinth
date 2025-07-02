@@ -12,7 +12,7 @@ export default function LabyrinthPage() {
     const timer = setTimeout(() => {
       setShowLogo(false);
       router.push('/Thetrail');
-    }, 3000); // Show logo for 4 seconds then navigate
+    }, 3000); // Show logo for 3 seconds then navigate
 
     return () => clearTimeout(timer);
   }, [router]);
@@ -31,7 +31,7 @@ export default function LabyrinthPage() {
         }}
       />
 
-      <AnimatePresence>h
+      <AnimatePresence>
         {showLogo && (
           <motion.div
             initial={{ opacity: 0 }}
@@ -40,8 +40,8 @@ export default function LabyrinthPage() {
             transition={{ duration: 1 }}
             className="relative"
             style={{
-              width: 'min(60vw, 300px)',
-              height: 'min(60vw, 300px)'
+              width: 'min(40vw, 180px)',
+              height: 'min(40vw, 180px)'
             }}
           >
             <img
